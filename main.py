@@ -79,6 +79,29 @@ class SymbolKind(object):
     Array = 18
 
 
+class CompletionItemKind(object):
+    Text = 1
+    Method = 2
+    Function = 3
+    Constructor = 4
+    Field = 5
+    Variable = 6
+    Class = 7
+    Interface = 8
+    Module = 9
+    Property = 10
+    Unit = 11
+    Value = 12
+    Enum = 13
+    Keyword = 14
+    Snippet = 15
+    Color = 16
+    File = 17
+    Reference = 18
+
+
+completion_item_kind_names = {v: k for k, v in CompletionItemKind.__dict__.items()}
+
 symbol_kind_names = {
     SymbolKind.File: "file",
     SymbolKind.Module: "module",
@@ -1598,8 +1621,13 @@ class CompletionHandler2(sublime_plugin.ViewEventListener):
 
     def format_completion(self, item) -> 'Tuple[str, str]':
         label = item.get("label")
-        # kind = item.get("kind")
+        kind = item.get("kind")
         detail = item.get("detail")
+        if not detail:
+            if kind is not None:
+                detail = completion_item_kind_names[kind]
+            else:
+                detail = ""
         insertText = label
         if item.get("insertTextFormat") == 2:
             insertText = item.get("insertText")
